@@ -50,18 +50,6 @@
             <scope>compile</scope>
         </dependency>
         <dependency>
-            <groupId>com.github.siroshun09.configapi</groupId>
-            <artifactId>configapi-yaml</artifactId>
-            <version>4.2.1</version>
-            <scope>compile</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.yaml</groupId>
-            <artifactId>snakeyaml</artifactId>
-            <version>1.29</version>
-            <scope>compile</scope>
-        </dependency>
-        <dependency>
             <groupId>org.jetbrains</groupId>
             <artifactId>annotations</artifactId>
             <version>21.0.1</version>

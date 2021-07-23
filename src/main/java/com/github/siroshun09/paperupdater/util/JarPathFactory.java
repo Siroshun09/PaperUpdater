@@ -1,7 +1,5 @@
 package com.github.siroshun09.paperupdater.util;
 
-import com.github.siroshun09.paperupdater.config.Configurations;
-import com.github.siroshun09.paperupdater.config.UpdaterSettings;
 import com.github.siroshun09.paperupdater.papermc.api.ProjectInformation;
 import org.jetbrains.annotations.NotNull;
 
@@ -14,10 +12,8 @@ public class JarPathFactory {
     }
 
     public static Path create(@NotNull ProjectInformation projectInfo, int buildNum) {
-        var config = Configurations.UPDATER_CONFIG;
-
         var result =
-                config.get(UpdaterSettings.JAR_FILE_NAME)
+                SystemProperties.getJarFileName()
                         .replace("{project-name}", projectInfo.getProjectId())
                         .replace("{project-version}", projectInfo.getVersion())
                         .replace("{project-build-number}", String.valueOf(buildNum));

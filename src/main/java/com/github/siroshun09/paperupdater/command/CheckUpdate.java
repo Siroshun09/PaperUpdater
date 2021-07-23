@@ -1,15 +1,12 @@
 package com.github.siroshun09.paperupdater.command;
 
-import com.github.siroshun09.configapi.api.util.ResourceUtils;
-import com.github.siroshun09.paperupdater.PaperUpdater;
-import com.github.siroshun09.paperupdater.config.Configurations;
-import com.github.siroshun09.paperupdater.config.UpdaterSettings;
 import com.github.siroshun09.paperupdater.papermc.api.ProjectInformation;
 import com.github.siroshun09.paperupdater.papermc.api.build.BuildInformation;
 import com.github.siroshun09.paperupdater.papermc.api.build.Change;
 import com.github.siroshun09.paperupdater.papermc.client.PaperApiClient;
 import com.github.siroshun09.paperupdater.util.JarPathFactory;
 import com.github.siroshun09.paperupdater.util.Sha256Checker;
+import com.github.siroshun09.paperupdater.util.SystemProperties;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
@@ -22,12 +19,8 @@ public class CheckUpdate {
         System.out.println();
         System.out.println("Checking updates...");
 
-        if (!Configurations.UPDATER_CONFIG.isLoaded()) {
-            loadUpdaterConfig();
-        }
-
-        var projectName = getProjectName();
-        var projectVersion = getProjectVersion();
+        var projectName = SystemProperties.getProjectName();
+        var projectVersion = SystemProperties.getProjectVersion();
 
         System.out.println();
         System.out.println("Project name: " + projectName);
@@ -99,59 +92,6 @@ public class CheckUpdate {
         System.out.println();
         System.out.println("Build " + buildInfo.getBuild() + " was downloaded to " + jarPath.getFileName().toString() + "!");
         System.exit(0);
-    }
-
-    private static void loadUpdaterConfig() {
-        System.out.println();
-        System.out.println("Loading updater-config.yml...");
-
-        var path = Configurations.UPDATER_CONFIG.getPath();
-
-        if (!Files.isRegularFile(path)) {
-            try {
-                ResourceUtils.copyFromClassLoaderIfNotExists(
-                        PaperUpdater.class.getClassLoader(), "updater-config.yml", path
-                );
-            } catch (IOException e) {
-                System.err.println("Could not save default updater-config.yml");
-                e.printStackTrace(System.err);
-                System.exit(1);
-                throw new InternalError(e);
-            }
-        }
-
-        try {
-            Configurations.UPDATER_CONFIG.load();
-        } catch (IOException e) {
-            System.err.println("Could not load updater-config.yml");
-            e.printStackTrace(System.err);
-            System.exit(1);
-            throw new InternalError(e);
-        }
-    }
-
-    private static String getProjectName() {
-        var projectName = Configurations.UPDATER_CONFIG.get(UpdaterSettings.PROJECT_NAME);
-
-        if (projectName.isEmpty()) {
-            System.err.println("project-name must not be empty in updater-config.yml");
-            System.exit(1);
-            throw new InternalError();
-        }
-
-        return projectName;
-    }
-
-    private static String getProjectVersion() {
-        var projectVersion = Configurations.UPDATER_CONFIG.get(UpdaterSettings.PROJECT_VERSION);
-
-        if (projectVersion.isEmpty()) {
-            System.err.println("project-version must not be empty in updater-config.yml");
-            System.exit(1);
-            throw new InternalError();
-        }
-
-        return projectVersion;
     }
 
     private static ProjectInformation getProjectInformation(@NotNull PaperApiClient client,
