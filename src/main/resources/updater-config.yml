@@ -1,0 +1,3 @@
+project-name: "paper" # paper or waterfall
+project-version: "1.17.1"
+jar-file-name: "{project-name}-{project-version}.jar" # placeholders: {project-name}, {project-version}, {project-build-number}
