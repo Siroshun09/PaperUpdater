@@ -8,8 +8,8 @@ public final class SystemProperties {
         var property = System.getProperty("paperupdater.project-name");
 
         if (property == null || property.isEmpty()) {
-            System.err.println("project-name must not be empty.");
-            System.err.println("Please specify project-name: -Dpaperupdater.project-name=NAME (paper, waterfall)");
+            SystemLogger.printError("project-name must not be empty.");
+            SystemLogger.printError("Please specify project-name: -Dpaperupdater.project-name=NAME (paper, waterfall)");
             System.exit(1);
             throw new InternalError();
         }
@@ -21,8 +21,8 @@ public final class SystemProperties {
         var property = System.getProperty("paperupdater.project-version");
 
         if (property == null || property.isEmpty()) {
-            System.err.println("project-version must not be empty.");
-            System.err.println("Please specify project-version: -Dpaperupdater.project-version=VERSION (ex 1.17.1)");
+            SystemLogger.printError("project-version must not be empty.");
+            SystemLogger.printError("Please specify project-version: -Dpaperupdater.project-version=VERSION (ex 1.17.1)");
             System.exit(1);
             throw new InternalError();
         }
@@ -34,15 +34,19 @@ public final class SystemProperties {
         var property = System.getProperty("paperupdater.jar-file-name", "{project-name}-{project-version}.jar");
 
         if (property == null || property.isEmpty()) {
-            System.err.println("jar-file-name must not be empty.");
+            SystemLogger.printError("jar-file-name must not be empty.");
             System.err.println(
                     "Please specify project-name: -Dpaperupdater.jar-file-name=\"{project-name}-{project-version}.jar\""
             );
-            System.err.println("Available placeholders: {project-name}, {project-version}, {project-build-number}");
+            SystemLogger.printError("Available placeholders: {project-name}, {project-version}, {project-build-number}");
             System.exit(1);
             throw new InternalError();
         }
 
         return property;
+    }
+
+    public static boolean isLogging() {
+        return !Boolean.getBoolean("paperupdater.no-logging");
     }
 }

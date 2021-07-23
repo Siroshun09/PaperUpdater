@@ -6,6 +6,7 @@ import com.github.siroshun09.paperupdater.papermc.api.build.Change;
 import com.github.siroshun09.paperupdater.papermc.client.PaperApiClient;
 import com.github.siroshun09.paperupdater.util.JarPathFactory;
 import com.github.siroshun09.paperupdater.util.Sha256Checker;
+import com.github.siroshun09.paperupdater.util.SystemLogger;
 import com.github.siroshun09.paperupdater.util.SystemProperties;
 import org.jetbrains.annotations.NotNull;
 
@@ -16,15 +17,15 @@ import java.nio.file.Files;
 public class CheckUpdate {
 
     public static void run() {
-        System.out.println();
-        System.out.println("Checking updates...");
+        SystemLogger.printNewLine();
+        SystemLogger.print("Checking updates...");
 
         var projectName = SystemProperties.getProjectName();
         var projectVersion = SystemProperties.getProjectVersion();
 
-        System.out.println();
-        System.out.println("Project name: " + projectName);
-        System.out.println("Project version: " + projectVersion);
+        SystemLogger.printNewLine();
+        SystemLogger.print("Project name: " + projectName);
+        SystemLogger.print("Project version: " + projectVersion);
 
         var client = PaperApiClient.create(HttpClient.newHttpClient());
 
@@ -32,8 +33,8 @@ public class CheckUpdate {
 
         var buildInfo = getBuildInformation(client, projectInfo);
 
-        System.out.println("Latest build: " + buildInfo.getBuild());
-        System.out.println("Build time: " + buildInfo.getTime());
+        SystemLogger.print("Latest build: " + buildInfo.getBuild());
+        SystemLogger.print("Build time: " + buildInfo.getTime());
 
         var hash = buildInfo.getDownloads().getApplication().getSha256();
 
@@ -41,56 +42,51 @@ public class CheckUpdate {
 
         if (Files.exists(jarPath)) {
             if (Sha256Checker.isSameHash(jarPath, hash)) {
-                System.out.println();
-                System.out.println("No updates!");
+                SystemLogger.printNewLine();
+                SystemLogger.print("No updates!");
                 return;
             } else {
                 try {
                     Files.delete(jarPath);
                 } catch (IOException e) {
-                    System.err.println("Could not delete the old jar file");
-                    e.printStackTrace(System.err);
-                    System.exit(1);
+                    SystemLogger.printErrorAndExit("Could not delete the old jar file", e);
                     return;
                 }
             }
         }
 
-        System.out.println();
-        System.out.println("New build is now available!");
-        System.out.println("Downloading new build...");
-        System.out.println();
+        SystemLogger.printNewLine();
+        SystemLogger.print("New build is now available!");
+        SystemLogger.print("Downloading new build...");
+        SystemLogger.printNewLine();
 
-        System.out.println("-------- Changes --------");
-        buildInfo.getChanges().stream().map(Change::getMessage).forEach(System.out::println);
-        System.out.println("-----------------------");
+        SystemLogger.print("-------- Changes --------");
+        buildInfo.getChanges().stream().map(Change::getMessage).forEach(SystemLogger::print);
+        SystemLogger.print("-----------------------");
 
         try {
             client.downloadBuild(buildInfo, jarPath);
         } catch (Exception e) {
-            System.err.println("Could not download jar file");
-            e.printStackTrace(System.err);
-            System.exit(1);
+            SystemLogger.printErrorAndExit("Could not download jar file", e);
             return;
         }
 
         if (!Sha256Checker.isSameHash(jarPath, hash)) {
-            System.err.println("The SHA-256 hash value of the downloaded file was not as expected!");
-            System.err.println("Delete the file...");
+            SystemLogger.printError("The SHA-256 hash value of the downloaded file was not as expected!");
+            SystemLogger.printError("Delete the file...");
 
             try {
                 Files.delete(jarPath);
             } catch (IOException e) {
-                System.err.println("Could not delete the invalid jar file");
-                e.printStackTrace(System.err);
+                SystemLogger.printError("Could not delete the invalid jar file", e);
             }
 
             System.exit(1);
             return;
         }
 
-        System.out.println();
-        System.out.println("Build " + buildInfo.getBuild() + " was downloaded to " + jarPath.getFileName().toString() + "!");
+        SystemLogger.printNewLine();
+        SystemLogger.print("Build " + buildInfo.getBuild() + " was downloaded to " + jarPath.getFileName().toString() + "!");
         System.exit(0);
     }
 
@@ -102,15 +98,13 @@ public class CheckUpdate {
         try {
             projectInfo = client.getProjectInformation(projectName, projectVersion);
         } catch (Exception e) {
-            System.err.println("Could not get project information");
-            e.printStackTrace(System.err);
-            System.exit(1);
-            throw new InternalError();
+            SystemLogger.printErrorAndExit("Could not get project information", e);
+            throw new InternalError(e);
         }
 
         if (projectInfo.getBuilds() == null) {
-            System.err.println("Could not get build information");
-            System.err.println("Did you specify the correct project name?");
+            SystemLogger.printError("Could not get build information");
+            SystemLogger.printError("Did you specify the correct project name?");
             System.exit(1);
             throw new InternalError();
         }
@@ -120,16 +114,11 @@ public class CheckUpdate {
 
     private static BuildInformation getBuildInformation(@NotNull PaperApiClient client,
                                                         @NotNull ProjectInformation info) {
-        BuildInformation buildInfo = null;
-
         try {
-            buildInfo = client.getLatestBuild(info);
+            return client.getLatestBuild(info);
         } catch (Exception e) {
-            System.err.println("Could not get build information");
-            e.printStackTrace(System.err);
-            System.exit(1);
+            SystemLogger.printErrorAndExit("Could not get build information", e);
+            throw new InternalError();
         }
-
-        return buildInfo;
     }
 }

@@ -1,6 +1,7 @@
 package com.github.siroshun09.paperupdater;
 
 import com.github.siroshun09.paperupdater.command.CheckUpdate;
+import com.github.siroshun09.paperupdater.util.SystemLogger;
 
 public final class PaperUpdater {
 
@@ -9,10 +10,10 @@ public final class PaperUpdater {
             if (args[0].equalsIgnoreCase("checkUpdate")) {
                 CheckUpdate.run();
             } else {
-                System.out.println("Available Commands: help, checkUpdate");
+                SystemLogger.print("Available Commands: help, checkUpdate");
             }
         } else {
-            System.out.println("Available Commands: help, checkUpdate");
+            SystemLogger.print("Available Commands: help, checkUpdate");
         }
     }
 }

@@ -19,8 +19,7 @@ public class JarPathFactory {
                         .replace("{project-build-number}", String.valueOf(buildNum));
 
         if (result.isEmpty()) {
-            System.err.println("jar-file-name must not be empty in updater-config.yml");
-            System.exit(1);
+            SystemLogger.printErrorAndExit("jar-file-name must not be empty");
         }
 
         return Path.of(result);

@@ -17,9 +17,7 @@ public final class Sha256Checker {
         try {
             SHA256 = MessageDigest.getInstance("SHA-256");
         } catch (NoSuchAlgorithmException e) {
-            System.err.println("Could not get sha-256 algorithm");
-            e.printStackTrace(System.err);
-            System.exit(1);
+            SystemLogger.printErrorAndExit("Could not get sha-256 algorithm", e);
             throw new InternalError(e);
         }
     }
@@ -44,9 +42,7 @@ public final class Sha256Checker {
             }
             return Arrays.copyOfRange(buffer, 0, off);
         } catch (final IOException e) {
-            System.err.println("Failed to read all of the data from " + file.toAbsolutePath());
-            e.printStackTrace();
-            System.exit(1);
+            SystemLogger.printErrorAndExit("Failed to read all of the data from " + file.toAbsolutePath(), e);
             throw new InternalError(e);
         }
     }
