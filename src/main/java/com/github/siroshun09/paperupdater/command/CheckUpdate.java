@@ -62,7 +62,7 @@ public class CheckUpdate {
 
         SystemLogger.print("-------- Changes --------");
         buildInfo.getChanges().stream().map(Change::getMessage).forEach(SystemLogger::print);
-        SystemLogger.print("-----------------------");
+        SystemLogger.print("-------------------------");
 
         try {
             client.downloadBuild(buildInfo, jarPath);
@@ -78,7 +78,7 @@ public class CheckUpdate {
             try {
                 Files.delete(jarPath);
             } catch (IOException e) {
-                SystemLogger.printError("Could not delete the invalid jar file", e);
+                SystemLogger.printErrorAndExit("Could not delete the invalid jar file", e);
             }
 
             System.exit(1);

@@ -22,17 +22,6 @@ public final class SystemLogger {
         System.err.println(log);
     }
 
-    public static void printError(@NotNull String log, @NotNull Throwable e) {
-        System.err.println(log);
-        e.printStackTrace(System.err);
-    }
-
-    public static void printErrorAndExit(@NotNull String log) {
-        System.err.println(log);
-        System.exit(1);
-        throw new InternalError();
-    }
-
     public static void printErrorAndExit(@NotNull String log, @NotNull Throwable e) {
         System.err.println(log);
         e.printStackTrace(System.err);

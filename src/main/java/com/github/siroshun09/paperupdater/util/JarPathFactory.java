@@ -18,10 +18,6 @@ public class JarPathFactory {
                         .replace("{project-version}", projectInfo.getVersion())
                         .replace("{project-build-number}", String.valueOf(buildNum));
 
-        if (result.isEmpty()) {
-            SystemLogger.printErrorAndExit("jar-file-name must not be empty");
-        }
-
         return Path.of(result);
     }
 }
