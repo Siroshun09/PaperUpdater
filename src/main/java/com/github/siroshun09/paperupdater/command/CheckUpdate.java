@@ -4,6 +4,7 @@ import com.github.siroshun09.paperupdater.papermc.api.ProjectInformation;
 import com.github.siroshun09.paperupdater.papermc.api.build.BuildInformation;
 import com.github.siroshun09.paperupdater.papermc.api.build.Change;
 import com.github.siroshun09.paperupdater.papermc.client.PaperApiClient;
+import com.github.siroshun09.paperupdater.util.JarCache;
 import com.github.siroshun09.paperupdater.util.JarPathFactory;
 import com.github.siroshun09.paperupdater.util.Sha256Checker;
 import com.github.siroshun09.paperupdater.util.SystemLogger;
@@ -13,6 +14,7 @@ import org.jetbrains.annotations.NotNull;
 import java.io.IOException;
 import java.net.http.HttpClient;
 import java.nio.file.Files;
+import java.nio.file.Path;
 
 public class CheckUpdate {
 
@@ -64,6 +66,17 @@ public class CheckUpdate {
         buildInfo.getChanges().stream().map(Change::getMessage).forEach(SystemLogger::print);
         SystemLogger.print("-------------------------");
 
+        var cacheDirectory = SystemProperties.getCacheDirectory();
+        var jarCache = cacheDirectory != null ? new JarCache(cacheDirectory, projectInfo, buildInfo.getBuild()) : null;
+
+        if (jarCache != null && jarCache.hasCachedJar()) {
+            if (tryToCopyCachedJar(jarCache, hash, jarPath)) {
+                SystemLogger.print("Build " + buildInfo.getBuild() + " was copied from cache (" + jarCache.getPath().toAbsolutePath() +
+                        ") to " + jarPath.getFileName().toString() + "!");
+                return;
+            }
+        }
+
         try {
             client.downloadBuild(buildInfo, jarPath);
         } catch (Exception e) {
@@ -80,14 +93,32 @@ public class CheckUpdate {
             } catch (IOException e) {
                 SystemLogger.printErrorAndExit("Could not delete the invalid jar file", e);
             }
-
-            System.exit(1);
             return;
         }
 
         SystemLogger.printNewLine();
         SystemLogger.print("Build " + buildInfo.getBuild() + " was downloaded to " + jarPath.getFileName().toString() + "!");
-        System.exit(0);
+
+        if (jarCache != null) {
+            SystemLogger.printNewLine();
+            SystemLogger.print("Creating a new cache...");
+
+            try {
+                jarCache.saveNewCache(jarPath);
+            } catch (IOException e) {
+                SystemLogger.printErrorAndExit("Could not save the new cache", e);
+            }
+
+            SystemLogger.print("Deleting old cached jar files...");
+
+            try {
+                jarCache.deleteOldCaches();
+            } catch (IOException e) {
+                SystemLogger.printErrorAndExit("Could not delete old cached jar files", e);
+            }
+
+            SystemLogger.print("Done!");
+        }
     }
 
     private static ProjectInformation getProjectInformation(@NotNull PaperApiClient client,
@@ -120,5 +151,25 @@ public class CheckUpdate {
             SystemLogger.printErrorAndExit("Could not get build information", e);
             throw new InternalError();
         }
+    }
+
+    private static boolean tryToCopyCachedJar(@NotNull JarCache jarCache, @NotNull String hash, @NotNull Path dist) {
+        if (jarCache.checkSum(hash)) {
+            try {
+                jarCache.copyCache(dist);
+                return true;
+            } catch (IOException e) {
+                SystemLogger.printErrorAndExit("Could not copy jar file from cache", e);
+            }
+        } else {
+            try {
+                SystemLogger.print("Invalid cached jar was found, delete it...");
+                jarCache.deleteCache();
+            } catch (IOException e) {
+                SystemLogger.printErrorAndExit("Could not delete invalid jar file in cache", e);
+            }
+        }
+
+        return false;
     }
 }

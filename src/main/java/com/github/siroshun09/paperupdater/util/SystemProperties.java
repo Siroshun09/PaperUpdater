@@ -1,6 +1,9 @@
 package com.github.siroshun09.paperupdater.util;
 
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+
+import java.nio.file.Path;
 
 public final class SystemProperties {
 
@@ -44,6 +47,16 @@ public final class SystemProperties {
         }
 
         return property;
+    }
+
+    public static @Nullable Path getCacheDirectory() {
+        var property = System.getProperty("paperupdater.cache-directory", null);
+
+        if (property == null) {
+            return null;
+        }
+
+        return Path.of(property);
     }
 
     public static boolean isLogging() {
