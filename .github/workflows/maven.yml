@@ -6,11 +6,14 @@ jobs:
     uses: Siroshun09/gh-actions-workflows/.github/workflows/maven.yml@v1
     with:
       java-version: '11'
+      package-name: PaperUpdater-Build-${{ github.run_number }}
   build-java-17:
     uses: Siroshun09/gh-actions-workflows/.github/workflows/maven.yml@v1
     with:
       java-version: '17'
+      package-name: PaperUpdater-Build-${{ github.run_number }}
   build-java-18:
     uses: Siroshun09/gh-actions-workflows/.github/workflows/maven.yml@v1
     with:
       java-version: '18'
+      package-name: PaperUpdater-Build-${{ github.run_number }}
