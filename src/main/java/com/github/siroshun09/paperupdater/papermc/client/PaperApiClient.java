@@ -25,7 +25,6 @@ import static java.nio.file.StandardOpenOption.CREATE;
 import static java.nio.file.StandardOpenOption.TRUNCATE_EXISTING;
 import static java.nio.file.StandardOpenOption.WRITE;
 
-@SuppressWarnings("ClassCanBeRecord")
 public class PaperApiClient {
 
     private static final Gson GSON = new Gson();
