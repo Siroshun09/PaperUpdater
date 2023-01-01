@@ -1,9 +1,9 @@
 # PaperUpdater
 
-![GitHub Workflow Status](https://img.shields.io/github/workflow/status/Siroshun09/PaperUpdater/Java%20CI)
+![GitHub Workflow Status]((https://img.shields.io/github/actions/workflow/status/Siroshun09/PaperUpdater/maven.yml?branch=master)
 
 ## License
 
 This project is under the Apache License version 2.0. Please see [LICENSE](LICENSE) for more info.
 
-Copyright © 2020-2022, Siroshun09
+Copyright © 2021-2023, Siroshun09
