@@ -1,6 +1,6 @@
 # PaperUpdater
 
-![GitHub Workflow Status]((https://img.shields.io/github/actions/workflow/status/Siroshun09/PaperUpdater/maven.yml?branch=master)
+![GitHub Workflow Status](https://img.shields.io/github/actions/workflow/status/Siroshun09/PaperUpdater/maven.yml?branch=master)
 
 ## License
 
